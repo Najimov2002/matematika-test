@@ -45,7 +45,6 @@ input[type=text], select{width:100%;font:inherit;padding:12px 14px;border-radius
 .hint{font-size:13px;color:var(--muted)}
 .hidden{display:none!important}
 .user-badge{display:flex;align-items:center;gap:10px;background:var(--accent-soft);padding:10px 14px;border-radius:12px;font-size:14px;font-weight:600;color:var(--accent)}
-/* Savol */
 .prog{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);font-weight:500;margin-bottom:8px}
 .bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .25s}
@@ -61,7 +60,6 @@ input[type=text], select{width:100%;font:inherit;padding:12px 14px;border-radius
 .dot{width:28px;height:28px;border-radius:8px;border:1.5px solid var(--line);background:transparent;font-size:12px;font-family:var(--mono);color:var(--muted);padding:0}
 .dot.done{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
 .dot.cur{border-color:var(--ink);color:var(--ink);font-weight:700}
-/* Natija */
 .score{display:flex;align-items:baseline;gap:8px}
 .score b{font-family:var(--mono);font-size:64px;line-height:1;font-weight:700}
 .score span{font-family:var(--mono);font-size:22px;color:var(--muted)}
@@ -87,7 +85,6 @@ math{font-size:1.15em;font-family:"Latin Modern Math","STIX Two Math","Cambria M
 <body>
 <main class="wrap">
 
-<!-- 1. BOSHLANG'ICH SAHIFA -->
 <section id="start" class="stack">
   <div>
     <div class="eyebrow">Matematika Platformasi</div>
@@ -123,13 +120,11 @@ math{font-size:1.15em;font-family:"Latin Modern Math","STIX Two Math","Cambria M
     <p class="hint" style="margin:0">⚠️ <b>Diqqat:</b> Test vaqtida ilovadan yoki ekrandan chiqib ketsangiz, tizim buni qayd etadi va o‘qituvchiga yuboriladigan hisobotda chiqishlar soni ko‘rsatiladi.</p>
   </div>
 
-  <!-- Faqat o'qituvchi (Admin ID) kirganda ko'rinadigan tugma -->
   <div id="admin-panel-btn" class="hidden">
     <button id="open-admin" class="btn ghost block">📊 O‘qituvchi paneli (So‘nggi natijalar)</button>
   </div>
 </section>
 
-<!-- 2. TEST JARAYONI -->
 <section id="quiz" class="hidden">
   <div class="prog">
     <span id="pcount">Savol 1 / 20</span>
@@ -147,7 +142,6 @@ math{font-size:1.15em;font-family:"Latin Modern Math","STIX Two Math","Cambria M
   <p class="hint" id="warn" style="margin-top:12px;color:var(--bad);font-weight:600"></p>
 </section>
 
-<!-- 3. NATIJA SAHIFASI -->
 <section id="result" class="hidden stack">
   <div class="card stack">
     <div class="eyebrow">Test yakunlandi</div>
@@ -168,7 +162,6 @@ math{font-size:1.15em;font-family:"Latin Modern Math","STIX Two Math","Cambria M
   <button id="again" class="btn block">Yangi test boshlash</button>
 </section>
 
-<!-- 4. O'QITUVCHI PANELI -->
 <section id="admin" class="hidden stack">
   <div class="row" style="justify-content:space-between">
     <div>
@@ -193,7 +186,6 @@ math{font-size:1.15em;font-family:"Latin Modern Math","STIX Two Math","Cambria M
 </div>
 
 <script>
-// === SOZLAMALAR ===
 const BOT_TOKEN = "1359211736:AAHUpCw2T47JFv9bSoylzVxN1aOZy5LisS0";
 const TEACHER_ID = "917402854";
 const QUESTIONS_PER_TEST = 20;
@@ -211,7 +203,6 @@ let isQuizActive = false;
 
 const $ = id => document.getElementById(id);
 
-// Tashqi savollar.js (yoki eski HTML) faylidan 1480 ta savolni avtomatik o'qish
 async function loadQuestionBank() {
   try {
     const response = await fetch("savollar.js");
@@ -226,7 +217,6 @@ async function loadQuestionBank() {
 
     $("total-bank").textContent = BANK.length;
 
-    // Mavzularni tartib bilan select menyusiga qo'shish
     const cats = [...new Set(BANK.map(q => q.cat))];
     cats.forEach(c => {
       const count = BANK.filter(q => q.cat === c).length;
@@ -240,7 +230,7 @@ async function loadQuestionBank() {
     $("go").textContent = "Testni boshlash";
   } catch (err) {
     $("total-bank").textContent = "Xato";
-    $("nameerr").textContent = "⚠️ 'savollar.js' fayli topilmadi. Uni GitHub'ga 'index.html' yoniga yuklang.";
+    $("nameerr").textContent = "⚠️ 'savollar.js' fayli topilmadi.";
     $("go").textContent = "Baza yuklanmadi";
   }
 }
@@ -269,7 +259,6 @@ window.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// Anti-cheat
 document.addEventListener("visibilitychange", () => {
   if (document.hidden && isQuizActive) {
     cheatCount++;
@@ -279,7 +268,6 @@ document.addEventListener("visibilitychange", () => {
 });
 $("cover").addEventListener("click", () => $("cover").classList.add("hidden"));
 
-// Testni boshlash (oldingi tushgan savollarni imkon qadar takrorlamaydi)
 $("go").addEventListener("click", () => {
   const nameVal = $("name").value.trim();
   if (!nameVal) {
@@ -463,39 +451,33 @@ async function finishQuiz() {
   const wrongList = Object.entries(wrongTopics).map(([k, v]) => `• ${k}: ${v} ta xato`).join("\n") || "• Xatolar yo‘q! 🎉";
 
   const report =
-    `📊 <b>YANGI TEST NATIJASI</b>\n\n` +
-    `👤 <b>O‘quvchi:</b> ${studentName}\n` +
-    `🆔 <b>Telegram:</b> ${tgUsername} (ID: <code>${tgId}</code>)\n` +
-    `📚 <b>Yo‘nalish:</b> ${topicName}\n` +
-    `🏆 <b>Natija:</b> <b>${score} ball</b> (${correct}/${total} ta to‘g‘ri)\n` +
-    `⏱ <b>Vaqt:</b> ${timeStr}\n` +
-    `🚨 <b>Ekrandan chiqish:</b> ${cheatCount} marta\n\n` +
-    `❌ <b>Xatolar tahlili:</b>\n${wrongList}`;
+    `📊 YANGI TEST NATIJASI\n\n` +
+    `👤 O‘quvchi: ${studentName}\n` +
+    `🆔 Telegram: ${tgUsername} (ID: ${tgId})\n` +
+    `📚 Yo‘nalish: ${topicName}\n` +
+    `🏆 Natija: ${score} ball (${correct}/${total} ta to‘g‘ri)\n` +
+    `⏱ Vaqt: ${timeStr}\n` +
+    `🚨 Ekrandan chiqish: ${cheatCount} marta\n\n` +
+    `❌ Xatolar tahlili:\n${wrongList}`;
 
   const statusBox = $("tg-status");
   statusBox.className = "status-box sending";
   statusBox.textContent = "⏳ Natija o‘qituvchiga yuborilmoqda...";
 
   try {
-    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chat_id: TEACHER_ID,
-        text: report,
-        parse_mode: "HTML"
-      })
-    });
+    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${TEACHER_ID}&text=${encodeURIComponent(report)}`;
+    const res = await fetch(url);
     const data = await res.json();
     if (data.ok) {
       statusBox.className = "status-box sent";
       statusBox.textContent = "✅ Natija o‘qituvchining Telegramiga muvaffaqiyatli yuborildi!";
     } else {
-      throw new Error("Telegram API xatosi");
+      statusBox.className = "status-box err";
+      statusBox.textContent = `⚠️ Xato: ${data.description}`;
     }
   } catch (err) {
     statusBox.className = "status-box err";
-    statusBox.textContent = "⚠️ Internet sekinligi sababli avtomatik yuborilmadi. Ekranni skrinshot qilib o‘qituvchiga yuboring.";
+    statusBox.textContent = "⚠️ Tarmoq xatosi. Ekranni skrinshot qilib o‘qituvchiga yuboring.";
   }
 }
 
