@@ -380,7 +380,7 @@ $("next").addEventListener("click", () => {
   }
 });
 
-async function finishQuiz() {
+function finishQuiz() {
   isQuizActive = false;
   clearInterval(timerInterval);
 
@@ -464,21 +464,17 @@ async function finishQuiz() {
   statusBox.className = "status-box sending";
   statusBox.textContent = "⏳ Natija o‘qituvchiga yuborilmoqda...";
 
-  try {
-    const url = `${PROXY_URL}?text=${encodeURIComponent(report)}`;
-    const res = await fetch(url);
-    const data = await res.json();
-    if (data.ok) {
+  const finalUrl = `${PROXY_URL}?text=${encodeURIComponent(report)}&t=${Date.now()}`;
+
+  fetch(finalUrl, { mode: "no-cors" })
+    .then(() => {
       statusBox.className = "status-box sent";
-      statusBox.textContent = "✅ Natija o‘qituvchining Telegramiga muvaffaqiyatli yuborildi!";
-    } else {
+      statusBox.textContent = "✅ Natija o‘qituvchining Telegramiga yuborildi!";
+    })
+    .catch(() => {
       statusBox.className = "status-box err";
-      statusBox.textContent = `⚠️ Xato: ${data.description || "Yuborilmadi"}`;
-    }
-  } catch (err) {
-    statusBox.className = "status-box err";
-    statusBox.textContent = "⚠️ Tarmoq xatosi. Ekranni skrinshot qilib o‘qituvchiga yuboring.";
-  }
+      statusBox.textContent = "⚠️ Tarmoq xatosi. Ekranni skrinshot qilib o‘qituvchiga yuboring.";
+    });
 }
 
 $("again").addEventListener("click", () => {
