@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Matematika Onlayn Test</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f3f5f8; --surface:#ffffff; --ink:#15202b; --muted:#566574; --line:#d3dbe3;
+  --accent:#1f4e79; --accent-ink:#ffffff; --accent-soft:#e7eff7;
+  --ok:#0f6b5f; --ok-bg:#e1f2ee; --bad:#a8281f; --bad-bg:#fae8e6; --warn:#b45309; --warn-bg:#fef3c7;
+  --font:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,monospace;
+}
+:root[data-theme="dark"]{
+  --bg:#10161d; --surface:#18212b; --ink:#e8eef4; --muted:#9aabba; --line:#2c3947;
+  --accent:#7fb2e0; --accent-ink:#0c1520; --accent-soft:#1b2b3b;
+  --ok:#5fcdb7; --ok-bg:#11322d; --bad:#ff9a91; --bad-bg:#3a1c19; --warn:#fbbf24; --warn-bg:#451a03;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.5;-webkit-user-select:none;user-select:none}
+.wrap{max-width:640px;margin:0 auto;padding:18px 14px 48px}
+h1,h2,h3{line-height:1.25;margin:0}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:0 2px 8px rgba(0,0,0,.03)}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{border:0;border-radius:12px;padding:13px 18px;font-weight:600;font-size:16px;background:var(--accent);color:var(--accent-ink);min-height:48px;transition:transform .1s}
+.btn:active{transform:scale(.98)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--accent);border:1.5px solid var(--accent)}
+.btn.block{width:100%}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.fact{background:var(--accent-soft);border-radius:12px;padding:12px 8px;text-align:center}
+.fact b{display:block;font-family:var(--mono);font-size:22px;font-weight:700;color:var(--accent)}
+.fact span{font-size:12px;color:var(--muted);display:block;margin-top:2px}
+label{font-size:14px;font-weight:600;display:block;margin-bottom:6px}
+input[type=text], select{width:100%;font:inherit;padding:12px 14px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);min-height:48px}
+.hint{font-size:13px;color:var(--muted)}
+.hidden{display:none!important}
+.user-badge{display:flex;align-items:center;gap:10px;background:var(--accent-soft);padding:10px 14px;border-radius:12px;font-size:14px;font-weight:600;color:var(--accent)}
+/* Savol */
+.prog{display:flex;justify-content:space-between;font-size:14px;color:var(--muted);font-weight:500;margin-bottom:8px}
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .25s}
+.q{font-size:19px;font-weight:500;line-height:1.85;margin:16px 0;padding:4px 0;overflow-x:auto}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;gap:12px;align-items:center;text-align:left;width:100%;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;min-height:52px;font-size:17px}
+.opt .k{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--mono);font-size:14px;font-weight:700;background:var(--accent-soft);color:var(--accent)}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.opt[aria-pressed="true"] .k{background:var(--accent);color:var(--accent-ink)}
+.nav{display:flex;gap:10px;margin-top:18px}
+.nav .btn{flex:1}
+.dots{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+.dot{width:28px;height:28px;border-radius:8px;border:1.5px solid var(--line);background:transparent;font-size:12px;font-family:var(--mono);color:var(--muted);padding:0}
+.dot.done{background:var(--accent-soft);border-color:var(--accent);color:var(--accent);font-weight:600}
+.dot.cur{border-color:var(--ink);color:var(--ink);font-weight:700}
+/* Natija */
+.score{display:flex;align-items:baseline;gap:8px}
+.score b{font-family:var(--mono);font-size:64px;line-height:1;font-weight:700}
+.score span{font-family:var(--mono);font-size:22px;color:var(--muted)}
+.pill{display:inline-block;padding:5px 12px;border-radius:99px;font-weight:600;font-size:13px}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.pill.mid{background:var(--accent-soft);color:var(--accent)}
+.pill.bad{background:var(--bad-bg);color:var(--bad)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.rv{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface);margin-top:8px}
+.rv.ok{border-left:5px solid var(--ok)}
+.rv.no{border-left:5px solid var(--bad)}
+.status-box{padding:12px 14px;border-radius:12px;font-size:14px;font-weight:600;text-align:center}
+.status-box.sending{background:var(--accent-soft);color:var(--accent)}
+.status-box.sent{background:var(--ok-bg);color:var(--ok)}
+.status-box.err{background:var(--bad-bg);color:var(--bad)}
+.cover{position:fixed;inset:0;z-index:50;background:var(--bg);display:grid;place-items:center;text-align:center;padding:24px;cursor:pointer}
+.tb{border-collapse:collapse;margin:8px 0}
+.tb td{border:1px solid var(--line);padding:4px 10px;text-align:center}
+math{font-size:1.15em;font-family:"Latin Modern Math","STIX Two Math","Cambria Math",serif}
+@media print{body{display:none!important}}
+</style>
+</head>
+<body>
+<main class="wrap">
+
+<!-- 1. BOSHLANG'ICH SAHIFA -->
+<section id="start" class="stack">
+  <div>
+    <div class="eyebrow">Matematika Platformasi</div>
+    <h1 style="font-size:24px;margin-top:4px">Bilimni tekshirish va nazorat testi</h1>
+    <p class="hint" style="margin:6px 0 0">Natijangiz avtomatik ravishda o‘qituvchiga yuboriladi</p>
+  </div>
+
+  <div id="tg-user-box" class="user-badge hidden">
+    <span>👤 O‘quvchi: <b id="tg-user-label"></b></span>
+  </div>
+
+  <div class="facts">
+    <div class="fact"><b id="total-bank">...</b><span>savollar bazasi</span></div>
+    <div class="fact"><b>20</b><span>test savoli</span></div>
+    <div class="fact"><b>100</b><span>ballik tizim</span></div>
+  </div>
+
+  <div class="card stack">
+    <div id="manual-name-box">
+      <label for="name">Ism-familiyangiz</label>
+      <input id="name" type="text" placeholder="Masalan: Aliyev Vali" maxlength="40">
+    </div>
+
+    <div>
+      <label for="topic">Mavzuni tanlang</label>
+      <select id="topic">
+        <option value="ALL">Barcha mavzulardan aralash (20 ta savol)</option>
+      </select>
+    </div>
+
+    <p class="hint" id="nameerr" style="margin:0;color:var(--bad)"></p>
+    <button id="go" class="btn block" disabled>Savollar yuklanmoqda...</button>
+    <p class="hint" style="margin:0">⚠️ <b>Diqqat:</b> Test vaqtida ilovadan yoki ekrandan chiqib ketsangiz, tizim buni qayd etadi va o‘qituvchiga yuboriladigan hisobotda chiqishlar soni ko‘rsatiladi.</p>
+  </div>
+
+  <!-- Faqat o'qituvchi (Admin ID) kirganda ko'rinadigan tugma -->
+  <div id="admin-panel-btn" class="hidden">
+    <button id="open-admin" class="btn ghost block">📊 O‘qituvchi paneli (So‘nggi natijalar)</button>
+  </div>
+</section>
+
+<!-- 2. TEST JARAYONI -->
+<section id="quiz" class="hidden">
+  <div class="prog">
+    <span id="pcount">Savol 1 / 20</span>
+    <span id="timer" style="font-family:var(--mono);font-weight:600">00:00</span>
+    <span id="panswered">Javob: 0</span>
+  </div>
+  <div class="bar"><i id="pbar" style="width:5%"></i></div>
+  <div class="q" id="qtext"></div>
+  <div class="opts" id="opts"></div>
+  <div class="nav">
+    <button id="prev" class="btn ghost">Orqaga</button>
+    <button id="next" class="btn">Keyingi</button>
+  </div>
+  <div class="dots" id="dots"></div>
+  <p class="hint" id="warn" style="margin-top:12px;color:var(--bad);font-weight:600"></p>
+</section>
+
+<!-- 3. NATIJA SAHIFASI -->
+<section id="result" class="hidden stack">
+  <div class="card stack">
+    <div class="eyebrow">Test yakunlandi</div>
+    <div class="score"><b id="sc">0</b><span>/ 100</span></div>
+    <div class="row">
+      <span id="grade" class="pill ok"></span>
+      <span id="cheat-badge" class="pill warn hidden"></span>
+    </div>
+    <div class="hint" id="meta-info"></div>
+    <div id="tg-status" class="status-box sending">⏳ Natija o‘qituvchiga yuborilmoqda...</div>
+  </div>
+
+  <div class="card stack">
+    <h3 style="font-size:17px">Xato va to‘g‘ri javoblar tahlili</h3>
+    <div id="review-list"></div>
+  </div>
+
+  <button id="again" class="btn block">Yangi test boshlash</button>
+</section>
+
+<!-- 4. O'QITUVCHI PANELI -->
+<section id="admin" class="hidden stack">
+  <div class="row" style="justify-content:space-between">
+    <div>
+      <div class="eyebrow">O‘qituvchi nazorati</div>
+      <h2 style="font-size:22px;margin-top:4px">O‘quvchilar natijalari</h2>
+    </div>
+    <button id="close-admin" class="btn ghost">Yopish</button>
+  </div>
+  <div class="card stack">
+    <p class="hint" style="margin:0">Barcha natijalar sizning Telegram botingizga ham avtomatik kelib tushadi. Quyida ushbu qurilmada saqlangan tarix:</p>
+    <div id="admin-logs" class="stack"></div>
+  </div>
+</section>
+
+</main>
+
+<div id="cover" class="cover hidden">
+  <div class="stack" style="text-align:center">
+    <b style="font-size:22px;color:var(--bad)">⚠️ Test yashirildi!</b>
+    <span class="hint">Siz ekrandan chiqdingiz. Bu holat qayd etildi.<br>Davom etish uchun ekranga bosing.</span>
+  </div>
+</div>
+
+<script>
+// === SOZLAMALAR ===
+const BOT_TOKEN = "1359211736:AAHUpCw2T47JFv9bSoylzVxN1aOZy5LisS0";
+const TEACHER_ID = "917402854";
+const QUESTIONS_PER_TEST = 20;
+
+let BANK = [];
+const tg = window.Telegram && window.Telegram.WebApp;
+let tgUser = null;
+let quizQuestions = [];
+let userAnswers = [];
+let currentIdx = 0;
+let startTime = 0;
+let timerInterval = null;
+let cheatCount = 0;
+let isQuizActive = false;
+
+const $ = id => document.getElementById(id);
+
+// Tashqi savollar.js (yoki eski HTML) faylidan 1480 ta savolni avtomatik o'qish
+async function loadQuestionBank() {
+  try {
+    const response = await fetch("savollar.js");
+    if (!response.ok) throw new Error("Fayl topilmadi");
+    const rawText = await response.text();
+    const match = rawText.match(/var\s+BANK\s*=\s*(\[[\s\S]*?\]);/);
+    if (match && match[1]) {
+      BANK = JSON.parse(match[1]);
+    } else {
+      throw new Error("BANK topilmadi");
+    }
+
+    $("total-bank").textContent = BANK.length;
+
+    // Mavzularni tartib bilan select menyusiga qo'shish
+    const cats = [...new Set(BANK.map(q => q.cat))];
+    cats.forEach(c => {
+      const count = BANK.filter(q => q.cat === c).length;
+      const opt = document.createElement("option");
+      opt.value = c;
+      opt.textContent = `${c} (${count} ta savol)`;
+      $("topic").appendChild(opt);
+    });
+
+    $("go").disabled = false;
+    $("go").textContent = "Testni boshlash";
+  } catch (err) {
+    $("total-bank").textContent = "Xato";
+    $("nameerr").textContent = "⚠️ 'savollar.js' fayli topilmadi. Uni GitHub'ga 'index.html' yoniga yuklang.";
+    $("go").textContent = "Baza yuklanmadi";
+  }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  loadQuestionBank();
+
+  if (tg) {
+    tg.ready();
+    tg.expand();
+    if (tg.colorScheme === "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+    if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+      tgUser = tg.initDataUnsafe.user;
+      const fullName = [tgUser.first_name, tgUser.last_name].filter(Boolean).join(" ");
+      $("tg-user-box").classList.remove("hidden");
+      $("tg-user-label").textContent = fullName + (tgUser.username ? ` (@${tgUser.username})` : "");
+      $("name").value = fullName;
+      $("manual-name-box").classList.add("hidden");
+
+      if (String(tgUser.id) === String(TEACHER_ID)) {
+        $("admin-panel-btn").classList.remove("hidden");
+      }
+    }
+  }
+});
+
+// Anti-cheat
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden && isQuizActive) {
+    cheatCount++;
+    $("cover").classList.remove("hidden");
+    $("warn").textContent = `⚠️ Diqqat! Siz test vaqtida ${cheatCount} marta ekrandan chiqdingiz!`;
+  }
+});
+$("cover").addEventListener("click", () => $("cover").classList.add("hidden"));
+
+// Testni boshlash (oldingi tushgan savollarni imkon qadar takrorlamaydi)
+$("go").addEventListener("click", () => {
+  const nameVal = $("name").value.trim();
+  if (!nameVal) {
+    $("nameerr").textContent = "Iltimos, ism-familiyangizni kiriting!";
+    return;
+  }
+  $("nameerr").textContent = "";
+
+  const selectedTopic = $("topic").value;
+  let pool = selectedTopic === "ALL" ? [...BANK] : BANK.filter(q => q.cat === selectedTopic);
+
+  let seen = JSON.parse(localStorage.getItem("seen_q_ids") || "[]");
+  let unseen = pool.filter(q => !seen.includes(q.id));
+  if (unseen.length < QUESTIONS_PER_TEST) {
+    seen = [];
+    unseen = [...pool];
+  }
+
+  for (let i = unseen.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [unseen[i], unseen[j]] = [unseen[j], unseen[i]];
+  }
+
+  quizQuestions = unseen.slice(0, Math.min(QUESTIONS_PER_TEST, unseen.length));
+  localStorage.setItem("seen_q_ids", JSON.stringify([...seen, ...quizQuestions.map(q => q.id)]));
+
+  userAnswers = new Array(quizQuestions.length).fill(null);
+  currentIdx = 0;
+  cheatCount = 0;
+  isQuizActive = true;
+  startTime = Date.now();
+
+  $("start").classList.add("hidden");
+  $("result").classList.add("hidden");
+  $("quiz").classList.remove("hidden");
+  $("warn").textContent = "";
+
+  renderDots();
+  renderQuestion();
+  startTimer();
+});
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    const sec = Math.floor((Date.now() - startTime) / 1000);
+    const m = String(Math.floor(sec / 60)).padStart(2, "0");
+    const s = String(sec % 60).padStart(2, "0");
+    $("timer").textContent = `${m}:${s}`;
+  }, 1000);
+}
+
+function renderDots() {
+  const box = $("dots");
+  box.innerHTML = "";
+  quizQuestions.forEach((_, idx) => {
+    const b = document.createElement("button");
+    b.className = "dot" + (userAnswers[idx] !== null ? " done" : "") + (idx === currentIdx ? " cur" : "");
+    b.textContent = idx + 1;
+    b.onclick = () => { currentIdx = idx; renderQuestion(); };
+    box.appendChild(b);
+  });
+}
+
+function renderQuestion() {
+  const q = quizQuestions[currentIdx];
+  const total = quizQuestions.length;
+  const answeredCount = userAnswers.filter(x => x !== null).length;
+
+  $("pcount").textContent = `Savol ${currentIdx + 1} / ${total}`;
+  $("panswered").textContent = `Javob: ${answeredCount}`;
+  $("pbar").style.width = `${((currentIdx + 1) / total) * 100}%`;
+  $("qtext").innerHTML = q.q;
+
+  const optsBox = $("opts");
+  optsBox.innerHTML = "";
+  const letters = ["A", "B", "C", "D", "E"];
+
+  q.opts.forEach((optText, i) => {
+    const btn = document.createElement("button");
+    btn.className = "opt";
+    btn.setAttribute("aria-pressed", userAnswers[currentIdx] === i ? "true" : "false");
+    btn.innerHTML = `<span class="k">${letters[i]}</span><span class="ot">${optText}</span>`;
+    btn.onclick = () => {
+      userAnswers[currentIdx] = i;
+      renderQuestion();
+    };
+    optsBox.appendChild(btn);
+  });
+
+  $("prev").disabled = currentIdx === 0;
+  $("next").textContent = currentIdx === total - 1 ? "Testni yakunlash ✅" : "Keyingi";
+  renderDots();
+}
+
+$("prev").addEventListener("click", () => {
+  if (currentIdx > 0) { currentIdx--; renderQuestion(); }
+});
+
+$("next").addEventListener("click", () => {
+  if (currentIdx < quizQuestions.length - 1) {
+    currentIdx++;
+    renderQuestion();
+  } else {
+    const unanswered = userAnswers.filter(x => x === null).length;
+    if (unanswered > 0 && !confirm(`Sizda ${unanswered} ta belgilanmagan savol bor. Baribir yakunlaysizmi?`)) {
+      return;
+    }
+    finishQuiz();
+  }
+});
+
+async function finishQuiz() {
+  isQuizActive = false;
+  clearInterval(timerInterval);
+
+  const elapsedSec = Math.floor((Date.now() - startTime) / 1000);
+  const timeStr = `${Math.floor(elapsedSec / 60)} daq ${elapsedSec % 60} son`;
+
+  let correct = 0;
+  let wrongTopics = {};
+  const revBox = $("review-list");
+  revBox.innerHTML = "";
+
+  quizQuestions.forEach((q, i) => {
+    const isOk = userAnswers[i] === q.a;
+    if (isOk) {
+      correct++;
+    } else {
+      wrongTopics[q.cat] = (wrongTopics[q.cat] || 0) + 1;
+    }
+
+    const div = document.createElement("div");
+    div.className = "rv " + (isOk ? "ok" : "no");
+    const userTxt = userAnswers[i] !== null ? q.opts[userAnswers[i]] : "Belgilanmagan";
+    div.innerHTML = `
+      <div style="font-weight:600;margin-bottom:4px">${i + 1}. ${q.q}</div>
+      <div style="font-size:14px">Sizning javobingiz: <b>${userTxt}</b> ${isOk ? "✅" : "❌"}</div>
+      ${!isOk ? `<div style="font-size:14px;color:var(--ok)">To‘g‘ri javob: <b>${q.opts[q.a]}</b></div>` : ""}
+    `;
+    revBox.appendChild(div);
+  });
+
+  const total = quizQuestions.length;
+  const score = Math.round((correct / total) * 100);
+  const studentName = $("name").value.trim();
+  const topicName = $("topic").options[$("topic").selectedIndex].text;
+
+  $("quiz").classList.add("hidden");
+  $("result").classList.remove("hidden");
+  $("sc").textContent = score;
+
+  const gradeEl = $("grade");
+  if (score >= 86) { gradeEl.textContent = "5 (A'lo)"; gradeEl.className = "pill ok"; }
+  else if (score >= 71) { gradeEl.textContent = "4 (Yaxshi)"; gradeEl.className = "pill ok"; }
+  else if (score >= 55) { gradeEl.textContent = "3 (Qoniqarli)"; gradeEl.className = "pill mid"; }
+  else { gradeEl.textContent = "2 (Qoniqarsiz)"; gradeEl.className = "pill bad"; }
+
+  if (cheatCount > 0) {
+    $("cheat-badge").classList.remove("hidden");
+    $("cheat-badge").textContent = `⚠️ Ekrandan chiqish: ${cheatCount} marta`;
+  } else {
+    $("cheat-badge").classList.add("hidden");
+  }
+
+  $("meta-info").textContent = `${studentName} • To‘g‘ri: ${correct}/${total} • Vaqt: ${timeStr}`;
+
+  const logs = JSON.parse(localStorage.getItem("math_test_logs") || "[]");
+  logs.unshift({
+    name: studentName,
+    score: score,
+    correct: `${correct}/${total}`,
+    time: timeStr,
+    cheats: cheatCount,
+    date: new Date().toLocaleString("uz-UZ")
+  });
+  localStorage.setItem("math_test_logs", JSON.stringify(logs.slice(0, 50)));
+
+  const tgUsername = tgUser && tgUser.username ? `@${tgUser.username}` : "yo‘q";
+  const tgId = tgUser ? tgUser.id : "Brauzerdan kirgan";
+  const wrongList = Object.entries(wrongTopics).map(([k, v]) => `• ${k}: ${v} ta xato`).join("\n") || "• Xatolar yo‘q! 🎉";
+
+  const report =
+    `📊 <b>YANGI TEST NATIJASI</b>\n\n` +
+    `👤 <b>O‘quvchi:</b> ${studentName}\n` +
+    `🆔 <b>Telegram:</b> ${tgUsername} (ID: <code>${tgId}</code>)\n` +
+    `📚 <b>Yo‘nalish:</b> ${topicName}\n` +
+    `🏆 <b>Natija:</b> <b>${score} ball</b> (${correct}/${total} ta to‘g‘ri)\n` +
+    `⏱ <b>Vaqt:</b> ${timeStr}\n` +
+    `🚨 <b>Ekrandan chiqish:</b> ${cheatCount} marta\n\n` +
+    `❌ <b>Xatolar tahlili:</b>\n${wrongList}`;
+
+  const statusBox = $("tg-status");
+  statusBox.className = "status-box sending";
+  statusBox.textContent = "⏳ Natija o‘qituvchiga yuborilmoqda...";
+
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: TEACHER_ID,
+        text: report,
+        parse_mode: "HTML"
+      })
+    });
+    const data = await res.json();
+    if (data.ok) {
+      statusBox.className = "status-box sent";
+      statusBox.textContent = "✅ Natija o‘qituvchining Telegramiga muvaffaqiyatli yuborildi!";
+    } else {
+      throw new Error("Telegram API xatosi");
+    }
+  } catch (err) {
+    statusBox.className = "status-box err";
+    statusBox.textContent = "⚠️ Internet sekinligi sababli avtomatik yuborilmadi. Ekranni skrinshot qilib o‘qituvchiga yuboring.";
+  }
+}
+
+$("again").addEventListener("click", () => {
+  $("result").classList.add("hidden");
+  $("start").classList.remove("hidden");
+});
+
+$("open-admin").addEventListener("click", () => {
+  $("start").classList.add("hidden");
+  $("admin").classList.remove("hidden");
+  const logs = JSON.parse(localStorage.getItem("math_test_logs") || "[]");
+  const box = $("admin-logs");
+  if (!logs.length) {
+    box.innerHTML = `<p class="hint">Hali test yechilmagan.</p>`;
+    return;
+  }
+  box.innerHTML = logs.map(l => `
+    <div class="rv ${l.score >= 70 ? 'ok' : 'no'}">
+      <b>${l.name}</b> — <b>${l.score} ball</b> (${l.correct})<br>
+      <span class="hint">⏱ ${l.time} | 🚨 Chiqish: ${l.cheats} | 📅 ${l.date}</span>
+    </div>
+  `).join("");
+});
+
+$("close-admin").addEventListener("click", () => {
+  $("admin").classList.add("hidden");
+  $("start").classList.remove("hidden");
+});
+</script>
+</body>
+</html>
