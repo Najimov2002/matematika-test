@@ -164,6 +164,35 @@ math{font-size:1.15em;font-family:"Latin Modern Math","STIX Two Math","Cambria M
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxMf_vVPnS8cVUVeeFf9UUURNEYGvfXvL2J7ILFZdoTbrSnY8e4Lhp9wqe67HlPB7FQAA/exec";
 const QUESTIONS_PER_TEST = 20;
 
+const TOPIC_NAMES = {
+  "1-mavzu": "Natural va butun sonlar",
+  "2-mavzu": "Butun va kasr qism, amallar tartibi",
+  "3-mavzu": "Tub sonlar, EKUB va EKUK",
+  "4-mavzu": "Faktorial",
+  "5-mavzu": "Kasrlar va cheksiz zanjir kasrlar",
+  "6-mavzu": "Chiziqli tenglamalar",
+  "7-mavzu": "Chiziqli tengsizliklar",
+  "8-mavzu": "Tenglamalar sistemasi",
+  "9-mavzu": "Darajalar",
+  "10-mavzu": "Algebraik ifodalar",
+  "11-mavzu": "Ratsional kasrlar va qisqa ko‘paytirish",
+  "12-mavzu": "Ildizlar",
+  "13-mavzu": "Modul",
+  "14-mavzu": "Nisbat va proporsiya",
+  "15-mavzu": "Kombinatorika",
+  "16-mavzu": "Nyuton binomi",
+  "17-mavzu": "Modulli tenglama va tengsizliklar",
+  "18-mavzu": "Ko‘rsatkichli tenglama va tengsizliklar",
+  "19-mavzu": "Koordinatalar va chiziqli funksiya",
+  "20-mavzu": "Funksiyalar, teskari va murakkab funksiya",
+  "21-mavzu": "Ko‘phadlar va Bezu teoremasi",
+  "22-mavzu": "Kvadrat tenglamalar va Viyet teoremasi"
+};
+
+function getTopicTitle(cat) {
+  return TOPIC_NAMES[cat] ? `${cat} — ${TOPIC_NAMES[cat]}` : cat;
+}
+
 let BANK = [];
 const tg = window.Telegram && window.Telegram.WebApp;
 const urlParams = new URLSearchParams(window.location.search);
@@ -198,7 +227,7 @@ async function loadQuestionBank() {
       const count = BANK.filter(q => q.cat === c).length;
       const opt = document.createElement("option");
       opt.value = c;
-      opt.textContent = `${c} (${count} ta savol)`;
+      opt.textContent = `${getTopicTitle(c)} (${count} ta)`;
       $("topic").appendChild(opt);
     });
 
@@ -363,7 +392,7 @@ function finishQuiz() {
     div.className = "rv " + (isOk ? "ok" : "no");
     const userTxt = userAnswers[i] !== null ? q.opts[userAnswers[i]] : "Belgilanmagan";
     div.innerHTML = `
-      <div style="font-weight:600;margin-bottom:4px">${i + 1}. ${q.q}</div>
+      <div style="font-weight:600;margin-bottom:4px">${i + 1}. ${q.q} <span class="hint">(${getTopicTitle(q.cat)})</span></div>
       <div style="font-size:14px">Sizning javobingiz: <b>${userTxt}</b> ${isOk ? "✅" : "❌"}</div>
       ${!isOk ? `<div style="font-size:14px;color:var(--ok)">To‘g‘ri javob: <b>${q.opts[q.a]}</b></div>` : ""}
     `;
@@ -395,7 +424,9 @@ function finishQuiz() {
 
   $("meta-info").textContent = `To‘g‘ri javoblar: ${correct}/${total} • Sarflangan vaqt: ${timeStr}`;
 
-  const wrongList = Object.entries(wrongTopics).map(([k, v]) => `• ${k}: ${v} ta xato`).join("\n") || "• Xatolar yo‘q! 🎉";
+  const wrongList = Object.entries(wrongTopics)
+    .map(([k, v]) => `• ${getTopicTitle(k)}: ${v} ta xato`)
+    .join("\n") || "• Xatolar yo‘q! 🎉";
 
   const report =
     `📚 Yo‘nalish: ${topicName}\n` +
