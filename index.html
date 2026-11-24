@@ -186,7 +186,7 @@ math{font-size:1.15em;font-family:"Latin Modern Math","STIX Two Math","Cambria M
 </div>
 
 <script>
-const BOT_TOKEN = "1359211736:AAHUpCw2T47JFv9bSoylzVxN1aOZy5LisS0";
+const PROXY_URL = "https://script.google.com/macros/s/AKfycbybeGAuFd2ofVcx7afPf80a6bnTeKSZSa_20VEz2yO3erooClPcHkeAvtKwn5MDqVTeXQ/exec";
 const TEACHER_ID = "917402854";
 const QUESTIONS_PER_TEST = 20;
 
@@ -465,7 +465,7 @@ async function finishQuiz() {
   statusBox.textContent = "⏳ Natija o‘qituvchiga yuborilmoqda...";
 
   try {
-    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${TEACHER_ID}&text=${encodeURIComponent(report)}`;
+    const url = `${PROXY_URL}?text=${encodeURIComponent(report)}`;
     const res = await fetch(url);
     const data = await res.json();
     if (data.ok) {
@@ -473,7 +473,7 @@ async function finishQuiz() {
       statusBox.textContent = "✅ Natija o‘qituvchining Telegramiga muvaffaqiyatli yuborildi!";
     } else {
       statusBox.className = "status-box err";
-      statusBox.textContent = `⚠️ Xato: ${data.description}`;
+      statusBox.textContent = `⚠️ Xato: ${data.description || "Yuborilmadi"}`;
     }
   } catch (err) {
     statusBox.className = "status-box err";
