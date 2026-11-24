@@ -186,7 +186,6 @@ math{font-size:1.15em;font-family:"Latin Modern Math","STIX Two Math","Cambria M
 </div>
 
 <script>
-const PROXY_URL = "https://script.google.com/macros/s/AKfycbybeGAuFd2ofVcx7afPf80a6bnTeKSZSa_20VEz2yO3erooClPcHkeAvtKwn5MDqVTeXQ/exec";
 const TEACHER_ID = "917402854";
 const QUESTIONS_PER_TEST = 20;
 
@@ -447,7 +446,7 @@ function finishQuiz() {
   localStorage.setItem("math_test_logs", JSON.stringify(logs.slice(0, 50)));
 
   const tgUsername = tgUser && tgUser.username ? `@${tgUser.username}` : "yo‘q";
-  const tgId = tgUser ? tgUser.id : "Brauzerdan kirgan";
+  const tgId = tgUser ? tgUser.id : "Noma'lum";
   const wrongList = Object.entries(wrongTopics).map(([k, v]) => `• ${k}: ${v} ta xato`).join("\n") || "• Xatolar yo‘q! 🎉";
 
   const report =
@@ -461,20 +460,16 @@ function finishQuiz() {
     `❌ Xatolar tahlili:\n${wrongList}`;
 
   const statusBox = $("tg-status");
-  statusBox.className = "status-box sending";
-  statusBox.textContent = "⏳ Natija o‘qituvchiga yuborilmoqda...";
-
-  const finalUrl = `${PROXY_URL}?text=${encodeURIComponent(report)}&t=${Date.now()}`;
-
-  fetch(finalUrl, { mode: "no-cors" })
-    .then(() => {
-      statusBox.className = "status-box sent";
-      statusBox.textContent = "✅ Natija o‘qituvchining Telegramiga yuborildi!";
-    })
-    .catch(() => {
-      statusBox.className = "status-box err";
-      statusBox.textContent = "⚠️ Tarmoq xatosi. Ekranni skrinshot qilib o‘qituvchiga yuboring.";
-    });
+  if (tg && tg.sendData) {
+    statusBox.className = "status-box sent";
+    statusBox.textContent = "✅ Natija o‘qituvchining Telegramiga yuborildi!";
+    setTimeout(() => {
+      tg.sendData(report);
+    }, 1000);
+  } else {
+    statusBox.className = "status-box err";
+    statusBox.textContent = "⚠️ Natija yuborilishi uchun testni botdagi '📝 Testni boshlash' tugmasi orqali oching!";
+  }
 }
 
 $("again").addEventListener("click", () => {
